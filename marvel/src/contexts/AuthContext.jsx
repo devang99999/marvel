@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('email', data.user.email);
       setUser(data.user);
 
-      if (navigate) navigate('/');
+      window.location.replace("/")
     } catch (err) {
       throw err;
     } finally {
