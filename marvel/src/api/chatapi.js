@@ -1,6 +1,6 @@
 // src/chatapi.js
 
-const BASE_URL = "import.meta.env.VITE_API_URL"; // Your Flask backend
+const BASE_URL = import.meta.env.VITE_API_URL; // Your Flask backend
 
 // Auth headers using userId as token
 const getAuthHeaders = () => {
