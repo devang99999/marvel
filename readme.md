@@ -1,225 +1,295 @@
-# Marvel AI Chatbot 🦸‍♂️
+# 🦸‍♂️ Marvel AI Chatbot
 
-> A real-time Marvel-themed AI chatbot that mimics the ChatGPT experience with persistent chat sessions, user authentication, and Marvel-specific knowledge powered by Groq's LLaMA model.
+> *"With great power comes great responsibility... to build incredible AI experiences."*
 
-## 🌟 Features
+A cutting-edge, real-time Marvel-themed chatbot powered by Groq's LLaMA models, featuring intelligent web scraping, MongoDB data storage, and a sleek React frontend. Built for Marvel fans who demand both style and substance.
 
-- **🦸 Marvel Universe Knowledge** - Specialized AI responses about Marvel characters, storylines, and universe
-- **💬 Real-time Chat** - ChatGPT-style conversational interface with multi-turn context
-- **🔐 User Authentication** - Secure login/register system with JWT tokens
-- **💾 Persistent Chat History** - MongoDB-powered chat sessions that persist across visits
-- **📱 Fully Responsive** - Optimized for desktop, tablet, and mobile devices
-- **🌙 Theme Support** - Dark/light mode toggle for comfortable viewing
-- **📂 Session Management** - Create and switch between multiple chat sessions
+## ✨ Features
 
-## 🚀 Live Demo
+### 🧠 **Intelligent AI Chat**
+- **Groq LLaMA Integration**: Harnesses the power of Groq's advanced LLaMA models for context-aware, intelligent responses
+- **Multi-turn Conversations**: Maintains conversation memory for natural, flowing dialogue
+- **Marvel-Specialized**: Fine-tuned responses focused on Marvel universe content
 
-| Service | URL |
-|---------|-----|
-| **Frontend** | [vercel](https://marvel-nine-coral.vercel.app/) |
-<!-- | **Backend API** | [https://your-backend-url.onrender.com](https://your-backend-url.onrender.com) | -->
+### 🔍 **Hybrid Search System**
+- **Local MongoDB Search**: Lightning-fast queries from curated Marvel database
+- **Real-time Web Scraping**: Automatic fallback to live web scraping using SerpAPI + Playwright
+- **Smart Query Generation**: AI-powered search query optimization
+
+### 📚 **Advanced Data Pipeline**
+- **Dynamic Content Crawling**: Automatically discovers and indexes Marvel-related content
+- **Intelligent Classification**: AI-powered content categorization and curation
+- **Clean Data Storage**: Processed and structured content storage in MongoDB
+
+### 💬 **Session Management**
+- **Unique Chat Sessions**: Each conversation gets a unique ID for easy reference
+- **Persistent History**: All conversations auto-saved and retrievable
+- **Cross-device Sync**: Access your chat history from anywhere
+
+### 🧭 **Smart Recommendations**
+- **Context-Aware Suggestions**: Recommendations based on current conversation
+- **Historical Analysis**: Leverages chat history for personalized suggestions
+- **Trending Topics**: Integration with popular Marvel discussions
+
+### 🎨 **Modern User Experience**
+- **Responsive Design**: Seamless experience across desktop, tablet, and mobile
+- **Dark/Light Mode**: Beautiful themes for any preference
+- **JWT Authentication**: Secure user sessions and data protection
+- **Real-time Updates**: Instant message delivery and status updates
 
 ## 🏗️ Architecture
 
-**Tech Stack:**
-- **Backend:** Flask (Python) + MongoDB + Groq LLaMA API
-- **Frontend:** React + TypeScript + Vite + Tailwind CSS
-- **Deployment:** Render (Backend) + Vercel (Frontend)
-
-## 📂 Project Structure
-
 ```
 marvel-ai-chatbot/
-├── backend/                    # Flask API Server
-│   ├── server.py              # Main Flask application
-│   ├── auth.py                # Authentication routes
-│   ├── chat.py                # Chat logic & Groq integration
-│   ├── database.py            # MongoDB connection
-│   ├── models.py              # Database schemas
-│   ├── utils.py               # Helper functions
-│   ├── requirements.txt       # Python dependencies
-│   └── .env                   # Environment variables
+├── 🔧 Backend Core
+│   ├── phase_1.py              # Query generation & web scraping
+│   ├── phase_2.py              # Data classification & curation
+│   ├── phase_3.py              # Core chat logic & AI integration
+│   ├── phase_4.py              # Live fallback & scraping engine
+│   ├── server_prime.py         # Flask API server with JWT auth
+│   └── requirements.txt        # Python dependencies
 │
-├── frontend/                   # React Frontend
+├── 🎨 Frontend (React)
 │   ├── src/
-│   │   ├── components/        # Reusable UI components
-│   │   ├── pages/             # Page components
-│   │   ├── App.tsx            # Main App component
-│   │   └── main.tsx           # Entry point
-│   ├── public/                # Static assets
-│   ├── index.html             # HTML template
-│   ├── vite.config.ts         # Vite configuration
-│   ├── tailwind.config.js     # Tailwind CSS config
-│   └── package.json           # Node dependencies
+│   │   ├── api/                # Backend API integration
+│   │   ├── components/         # Reusable UI components
+│   │   │   ├── Chat/           # Chat interface components
+│   │   │   ├── Auth/           # Authentication forms
+│   │   │   └── UI/             # Common UI elements
+│   │   ├── contexts/           # React contexts (Auth, Theme)
+│   │   ├── hooks/              # Custom hooks (useChat, useDarkMode)
+│   │   ├── pages/              # Route components
+│   │   └── utils/              # Helper functions
+│   ├── index.html
+│   ├── tailwind.config.js      # Tailwind configuration
+│   └── vite.config.js          # Vite build configuration
 │
-├── render.yaml                # Render deployment config
-├── README.md                  # Project documentation
-└── .gitignore                 # Git ignore rules
+├── 🧪 Testing
+│   ├── test.py                 # Pipeline testing
+│   └── test2.py                # Integration testing
+│
+└── 🚀 Deployment
+    └── render.yaml             # Deployment configuration
 ```
 
-## 🛠️ Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
-
 - Python 3.8+
 - Node.js 16+
-- MongoDB database
+- MongoDB instance
 - Groq API key
+- SerpAPI key
 
-### Backend Setup
+### 🔧 Backend Setup
 
-1. **Navigate to backend directory**
-   ```bash
-   cd backend
-   ```
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd marvel-ai-chatbot
 
-2. **Install Python dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+# Install Python dependencies
+pip install -r requirements.txt
 
-3. **Configure environment variables**
-   
-   Create `.env` file in the backend folder:
-   ```env
-   MONGO_URI=your-mongodb-connection-string
-   GROQ_API_KEY=your-groq-api-key
-   SECRET_KEY=your-flask-secret-key
-   ```
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your API keys and MongoDB URI
 
-4. **Start the Flask server**
-   ```bash
-   python server.py
-   ```
+# Start the Flask backend
+python phase_4.py
+```
 
-   Server will run on `http://localhost:5000`
+### 🎨 Frontend Setup
 
-### Frontend Setup
+```bash
+# Navigate to frontend directory
+cd marvel
 
-1. **Navigate to frontend directory**
-   ```bash
-   cd frontend
-   ```
+# Install dependencies
+npm install
 
-2. **Install Node dependencies**
-   ```bash
-   npm install
-   ```
+# Start development server
+npm run dev
+```
 
-3. **Configure environment variables**
-   
-   Create `.env` file in the frontend folder:
-   ```env
-   VITE_BACKEND_URL=http://localhost:5000
-   ```
+Your application will be available at:
+- **Backend**: `http://localhost:5000`
+- **Frontend**: `http://localhost:5173`
 
-4. **Start the development server**
-   ```bash
-   npm run dev
-   ```
+## ⚙️ Environment Configuration
 
-   Application will run on `http://localhost:5173`
+Create a `.env` file in the root directory:
+
+```env
+# AI & Search APIs
+GROQ_API_KEY=your_groq_api_key_here
+SERPAPI_KEY=your_serpapi_key_here
+
+# Database
+MONGO_URI=mongodb://localhost:27017/marvel_chatbot
+
+
+# Optional: Deployment
+RENDER_EXTERNAL_URL=https://marvel-b1wd.onrender.com/
+```
+
+## 🛠️ Technology Stack
+
+### **Backend**
+| Technology | Purpose | Version |
+|------------|---------|---------|
+| **Python** | Core backend language | 3.8+ |
+| **Flask** | Web framework | 2.3+ |
+| **Groq API** | LLaMA model integration | Latest |
+| **MongoDB** | Database & search | 4.4+ |
+| **SerpAPI** | Search results | Latest |
+| **Playwright** | Web scraping | Latest |
+
+### **Frontend**
+| Technology | Purpose | Version |
+|------------|---------|---------|
+| **React** | UI framework | 18+ |
+| **Vite** | Build tool | 4+ |
+| **Tailwind CSS** | Styling | 3+ |
+| **React Router** | Navigation | 6+ |
+| **Axios** | HTTP client | Latest |
+
+## 🔐 Authentication Flow
+
+1. **Registration/Login**: Users create accounts or sign in
+2. **JWT Token**: Server issues secure JWT tokens
+3. **Token Storage**: Tokens stored securely in localStorage
+4. **Protected Routes**: Chat interface requires valid authentication
+5. **Session Persistence**: Chat history tied to user accounts
+
+## 🧪 Testing
+
+Run the test suite to ensure everything works correctly:
+
+```bash
+
+# Frontend testing
+cd marvel
+npm run dev
+```
+
+## 📊 API Endpoints
+
+### Authentication
+- `POST /api/register` - User registration
+- `POST /api/login` - User login
+- `POST /api/logout` - User logout
+
+### Chat
+- `POST /api/chat` - Send message and get AI response
+- `GET /api/chat/history` - Retrieve chat history
+- `GET /api/chat/sessions` - List all chat sessions
+
+### Search
+- `GET /api/search` - Search Marvel database
+- `POST /api/scrape` - Trigger manual content scraping
+
+## 🌟 Key Features Deep Dive
+
+### **AI-Powered Conversations**
+The chatbot uses Groq's LLaMA models to provide intelligent, contextual responses about the Marvel universe. Each conversation maintains context and can reference previous messages for natural dialogue flow.
+
+### **Hybrid Search Strategy**
+- **Primary**: Fast local search through curated MongoDB database
+- **Fallback**: Real-time web scraping when local data is insufficient
+- **Smart Routing**: AI determines the best search strategy for each query
+
+### **Dynamic Content Pipeline**
+1. **Query Generation**: AI creates optimal search queries
+2. **Web Crawling**: Discovers relevant Marvel content across the web
+3. **Content Processing**: Cleans and structures scraped data
+4. **Database Storage**: Stores processed content in MongoDB
+5. **Classification**: Categorizes content for improved searchability
 
 ## 🚀 Deployment
 
-### Backend (Render)
+### **Development**
+```bash
+# Backend
+python server_prime.py
 
-1. Connect your GitHub repository to Render
-2. Use the included `render.yaml` configuration
-3. Set environment variables in Render dashboard:
-   - `MONGO_URI`
-   - `GROQ_API_KEY`
-   - `SECRET_KEY`
+# Frontend
+cd marvel && npm run dev
+```
 
-### Frontend (Vercel/Netlify)
+### **Production**
+```bash
+# Build frontend
+cd marvel && npm run build
 
-1. Connect your GitHub repository
-2. Set build command: `npm run build`
-3. Set output directory: `dist`
-4. Configure environment variable:
-   - `VITE_BACKEND_URL=https://your-backend-url.onrender.com`
-
-## 📋 Development Roadmap
-
-### ✅ Completed Phases
-
-- **Phase 1:** Dynamic Query Generation + Data Scraping
-  - Groq LLaMA integration for search term generation
-  - SerpAPI for URL fetching
-  - Playwright + BeautifulSoup for data scraping
-  - MongoDB data storage
-
-- **Phase 2:** Authentication System
-  - User registration and login endpoints
-  - JWT token-based authentication
-  - Frontend auth integration
-
-- **Phase 3:** Real-time Chat Interface
-  - ChatGPT-style UI implementation
-  - Multi-turn conversation context
-  - Backend chat API endpoints
-
-- **Phase 4:** Chat History Persistence
-  - MongoDB chat session storage
-  - Unique session UUID generation
-  - Chat resume functionality
-
-- **Phase 5:** Session Management
-  - Multiple chat sessions per user
-  - Session switching interface
-  - Sidebar session listing
-
-### 🚧 In Progress
-
-- **Phase 6:** Contextual Recommendations
-  - Smart question suggestions
-  - Related character recommendations
-  - Context-aware prompts
-
-### 📅 Planned
-
-- **Phase 7:** Production Polish
-  - Performance optimizations
-  - Enhanced error handling
-  - Advanced security features
-
-## 🔧 API Endpoints
-
-### Authentication
-- `POST /register` - User registration
-- `POST /login` - User login
-- `POST /logout` - User logout
-
-### Chat
-- `POST /chat` - Send message and get AI response
-- `GET /chat/sessions` - Get user's chat sessions
-- `GET /chat/sessions/:id` - Get specific chat session
-- `DELETE /chat/sessions/:id` - Delete chat session
+# Deploy to Render/AWS/Heroku
+# Configure render.yaml or your preferred platform
+```
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions! Here's how to get started:
 
-## 📄 License
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### Development Guidelines
+- Follow PEP 8 for Python code
+- Use ESLint configuration for JavaScript/React
+- Write tests for new features
+- Update documentation as needed
+
+## 📋 Roadmap
+
+### **Phase 1: Core Features** ✅
+- [x] AI chat integration
+- [x] Basic web scraping
+- [x] MongoDB storage
+- [x] User authentication
+- [x] React frontend
+
+### **Phase 2: Enhanced Experience** 🚧
+- [ ] Advanced recommendation engine
+- [ ] Voice chat capabilities
+- [ ] Marvel character personas
+- [ ] Social sharing features
+
+### **Phase 3: Scale & Polish** 📋
+- [ ] Performance optimization
+- [ ] Advanced analytics
+- [ ] Mobile app (React Native)
+- [ ] Admin dashboard
+
+## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
-- **Groq** for providing the LLaMA API
-- **Marvel** for the incredible universe of characters and stories
-- **OpenAI** for ChatGPT interface inspiration
+- **Marvel Entertainment** for creating the incredible universe that inspired this project
+- **Groq** for providing powerful LLaMA model access
+- **MongoDB** for robust data storage solutions
+- **The Open Source Community** for the amazing tools and libraries
+<!-- 
+## 📞 Support
+
+Having issues? We're here to help!
+
+- 🐛 **Bug Reports**: [Open an issue](../../issues)
+- 💡 **Feature Requests**: [Start a discussion](../../discussions)
+- 📧 **Direct Contact**: [your-email@example.com] -->
 
 ---
 
 <div align="center">
 
-**Made with ❤️ for Marvel fans and AI enthusiasts**
+**⚡ Built with passion for the Marvel Universe ⚡**
 
-[Report Bug](https://github.com/yourusername/marvel-ai-chatbot/issues) · [Request Feature](https://github.com/yourusername/marvel-ai-chatbot/issues) · [Documentation](https://github.com/yourusername/marvel-ai-chatbot/wiki)
+<!-- *Made with ❤️ by developers who believe in heroes* -->
+
+[⬆️ Back to Top](#-marvel-ai-chatbot)
 
 </div>

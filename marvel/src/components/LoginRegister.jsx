@@ -62,7 +62,8 @@ export default function LoginRegister() {
               <div
                 className="modal-header"
                 style={{
-                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  background:
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                   color: "white",
                   borderTopLeftRadius: "15px",
                   borderTopRightRadius: "15px",
@@ -79,11 +80,12 @@ export default function LoginRegister() {
               </div>
               <div className="modal-body text-center">
                 <p style={{ fontSize: "1.1rem", marginBottom: "1rem" }}>
-                  Thanks for visiting! This app's backend is hosted on Render's free tier.
+                  Thanks for visiting! This app's backend is hosted on Render's
+                  free tier.
                 </p>
                 <p>
                   If it's inactive, it may take up to 30 seconds to wake up.
-                  Please be patient 
+                  Please be patient
                 </p>
                 <p className="mb-0">
                   Or click below to manually ping the backend:
@@ -102,13 +104,23 @@ export default function LoginRegister() {
                   Got it, continue
                 </button>
               </div>
+              <div className="modal-footer justify-content-center">
+                <a target="_balnk" href="https://www.linkedin.com/in/webdevanggandhi/">
+                  <button className="btn btn-primary" onClick={closeModal}>
+                    Or just text me
+                  </button>
+                </a>
+              </div>
             </div>
           </div>
         </div>
       )}
 
       {/* Auth Card */}
-      <div className="auth-card p-4 bg-white rounded-4 shadow" style={{ maxWidth: 450, width: "100%" }}>
+      <div
+        className="auth-card p-4 bg-white rounded-4 shadow"
+        style={{ maxWidth: 450, width: "100%" }}
+      >
         <div
           className="auth-header text-center text-white p-4 rounded-top"
           style={{
