@@ -4,25 +4,28 @@ import { useNavigate } from "react-router-dom";
 
 export default function LoginRegister() {
   const { login, register, loading } = useAuth();
-  const navigate = useNavigate(); // <-- Add this
+  const navigate = useNavigate();
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(true);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     try {
       if (mode === "login") {
-        await login(email, password, navigate); // pass navigate
+        await login(email, password, navigate);
       } else {
-        await register(email, password, navigate); // pass navigate
+        await register(email, password, navigate);
       }
     } catch {
       setError("Failed to " + (mode === "login" ? "login" : "register"));
     }
   };
+
+  const closeModal = () => setShowModal(false);
 
   return (
     <div
@@ -36,7 +39,6 @@ export default function LoginRegister() {
         padding: "20px",
       }}
     >
-      {/* Bootstrap CSS */}
       <link
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
         rel="stylesheet"
@@ -46,282 +48,117 @@ export default function LoginRegister() {
         rel="stylesheet"
       />
 
-      <style>{`
-        .auth-card {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
-          border-radius: 20px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          overflow: hidden;
-          max-width: 450px;
-          width: 100%;
-          transition: transform 0.3s ease;
-          animation: fadeIn 0.5s ease-in;
-        }
-        
-        .auth-card:hover {
-          transform: translateY(-5px);
-        }
-        
-        .auth-header {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 2rem;
-          text-align: center;
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .auth-header::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-          animation: shimmer 3s infinite;
-        }
-        
-        @keyframes shimmer {
-          0%, 100% { transform: rotate(0deg); }
-          50% { transform: rotate(180deg); }
-        }
-        
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .auth-header h2 {
-          margin: 0;
-          font-weight: 600;
-          font-size: 1.8rem;
-          position: relative;
-          z-index: 1;
-        }
-        
-        .auth-header .icon {
-          font-size: 3rem;
-          margin-bottom: 1rem;
-          opacity: 0.9;
-          position: relative;
-          z-index: 1;
-        }
-        
-        .auth-body {
-          padding: 2.5rem;
-        }
-        
-        .form-control {
-          border-radius: 12px;
-          border: 2px solid #e9ecef;
-          padding: 1rem 1.25rem;
-          font-size: 1rem;
-          transition: all 0.3s ease;
-          background: rgba(248, 249, 250, 0.8);
-          margin-bottom: 1.5rem;
-        }
-        
-        .form-control:focus {
-          border-color: #667eea;
-          box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-          background: white;
-          transform: translateY(-2px);
-          outline: none;
-        }
-        
-        .btn-primary {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          border: none;
-          border-radius: 12px;
-          padding: 1rem 2rem;
-          font-weight: 600;
-          font-size: 1.1rem;
-          transition: all 0.3s ease;
-          position: relative;
-          overflow: hidden;
-          color: white;
-          cursor: pointer;
-        }
-        
-        .btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-          background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-        }
-        
-        .btn-primary:active {
-          transform: translateY(0);
-        }
-        
-        .btn-primary:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-          transform: none;
-        }
-        
-        .btn-primary::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-          transition: left 0.5s;
-        }
-        
-        .btn-primary:hover::before {
-          left: 100%;
-        }
-        
-        .switch-mode {
-          text-align: center;
-          margin-top: 2rem;
-          padding-top: 1.5rem;
-          border-top: 1px solid #e9ecef;
-        }
-        
-        .switch-btn {
-          color: #667eea;
-          text-decoration: none;
-          font-weight: 600;
-          transition: all 0.3s ease;
-          position: relative;
-          cursor: pointer;
-          background: none;
-          border: none;
-          padding: 0;
-        }
-        
-        .switch-btn:hover {
-          color: #764ba2;
-          text-decoration: none;
-        }
-        
-        .switch-btn::after {
-          content: '';
-          position: absolute;
-          width: 0;
-          height: 2px;
-          bottom: -2px;
-          left: 50%;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          transition: all 0.3s ease;
-        }
-        
-        .switch-btn:hover::after {
-          width: 100%;
-          left: 0;
-        }
-        
-        .alert {
-          border-radius: 10px;
-          border: none;
-          margin-bottom: 1.5rem;
-          background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
-          color: white;
-          padding: 1rem;
-          animation: fadeIn 0.5s ease-in;
-        }
-        
-        .input-group {
-          margin-bottom: 1.5rem;
-          position: relative;
-        }
-        
-        .input-group-text {
-          background: transparent;
-          border: 2px solid #e9ecef;
-          border-right: none;
-          border-radius: 12px 0 0 12px;
-          color: #6c757d;
-          padding: 1rem 1.25rem;
-        }
-        
-        .input-group .form-control {
-          border-left: none;
-          border-radius: 0 12px 12px 0;
-          margin-bottom: 0;
-        }
-        
-        .input-group:focus-within .input-group-text {
-          border-color: #667eea;
-          color: #667eea;
-        }
-        
-        .spinner-border-sm {
-          width: 1rem;
-          height: 1rem;
-          border-width: 0.125em;
-        }
-        
-        .spinner-border {
-          display: inline-block;
-          vertical-align: text-bottom;
-          border: 0.25em solid currentColor;
-          border-right-color: transparent;
-          border-radius: 50%;
-          animation: spinner-border .75s linear infinite;
-        }
-        
-        @keyframes spinner-border {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+      {/* Modal */}
+      {showModal && (
+        <div
+          className="modal fade show"
+          style={{ display: "block", backgroundColor: "rgba(0,0,0,0.6)" }}
+          tabIndex="-1"
+          aria-modal="true"
+          role="dialog"
+        >
+          <div className="modal-dialog modal-dialog-centered modal-lg">
+            <div className="modal-content" style={{ borderRadius: "15px" }}>
+              <div
+                className="modal-header"
+                style={{
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  color: "white",
+                  borderTopLeftRadius: "15px",
+                  borderTopRightRadius: "15px",
+                }}
+              >
+                <h5 className="modal-title">
+                  <i className="fas fa-info-circle me-2"></i> Welcome!
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={closeModal}
+                ></button>
+              </div>
+              <div className="modal-body text-center">
+                <p style={{ fontSize: "1.1rem", marginBottom: "1rem" }}>
+                  Thanks for visiting! This app's backend is hosted on Render's free tier.
+                </p>
+                <p>
+                  If it's inactive, it may take up to 30 seconds to wake up.
+                  Please be patient 
+                </p>
+                <p className="mb-0">
+                  Or click below to manually ping the backend:
+                </p>
+                <a
+                  href="https://marvel-b1wd.onrender.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline-primary mt-3"
+                >
+                  Wake up backend
+                </a>
+              </div>
+              <div className="modal-footer justify-content-center">
+                <button className="btn btn-primary" onClick={closeModal}>
+                  Got it, continue
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-      <div className="auth-card">
-        <div className="auth-header">
-          <div className="icon">
+      {/* Auth Card */}
+      <div className="auth-card p-4 bg-white rounded-4 shadow" style={{ maxWidth: 450, width: "100%" }}>
+        <div
+          className="auth-header text-center text-white p-4 rounded-top"
+          style={{
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          }}
+        >
+          <div className="icon mb-2">
             <i
               className={`fas ${
                 mode === "login" ? "fa-sign-in-alt" : "fa-user-plus"
-              }`}
+              } fa-2x`}
             ></i>
           </div>
           <h2>{mode === "login" ? "Welcome Back" : "Create Account"}</h2>
-          <p className="mb-0" style={{ opacity: 0.75 }}>
+          <p className="mb-0 opacity-75">
             {mode === "login" ? "Sign in to your account" : "Join us today"}
           </p>
         </div>
 
-        <div className="auth-body">
-          {/* Use form for submission */}
+        <div className="auth-body mt-4">
           <form onSubmit={handleSubmit}>
             {error && (
-              <div className="alert" role="alert">
-                <i
-                  className="fas fa-exclamation-triangle"
-                  style={{ marginRight: "0.5rem" }}
-                ></i>
+              <div className="alert alert-danger" role="alert">
+                <i className="fas fa-exclamation-triangle me-2"></i>
                 {error}
               </div>
             )}
 
-            <div className="input-group">
+            <div className="input-group mb-3">
               <span className="input-group-text">
                 <i className="fas fa-envelope"></i>
               </span>
               <input
                 type="email"
                 className="form-control"
-                placeholder="Enter your email address"
+                placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
 
-            <div className="input-group">
+            <div className="input-group mb-4">
               <span className="input-group-text">
                 <i className="fas fa-lock"></i>
               </span>
               <input
                 type="password"
                 className="form-control"
-                placeholder="Enter your password"
+                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -331,13 +168,12 @@ export default function LoginRegister() {
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary w-100 mb-3"
+              className="btn btn-primary w-100"
             >
               {loading ? (
                 <>
                   <span
-                    className="spinner-border spinner-border-sm"
-                    style={{ marginRight: "0.5rem" }}
+                    className="spinner-border spinner-border-sm me-2"
                     role="status"
                     aria-hidden="true"
                   ></span>
@@ -346,10 +182,9 @@ export default function LoginRegister() {
               ) : (
                 <>
                   <i
-                    className={`fas ${
+                    className={`fas me-2 ${
                       mode === "login" ? "fa-sign-in-alt" : "fa-user-plus"
                     }`}
-                    style={{ marginRight: "0.5rem" }}
                   ></i>
                   {mode === "login" ? "Sign In" : "Create Account"}
                 </>
@@ -357,14 +192,15 @@ export default function LoginRegister() {
             </button>
           </form>
 
-          <div className="switch-mode">
-            <p className="text-muted mb-2">
+          <div className="text-center mt-4">
+            <p className="text-muted">
               {mode === "login"
                 ? "Don't have an account?"
                 : "Already have an account?"}
             </p>
             <button
-              className="switch-btn"
+              className="btn btn-link p-0"
+              style={{ color: "#667eea", fontWeight: "600" }}
               onClick={() => {
                 setError(null);
                 setMode(mode === "login" ? "register" : "login");
