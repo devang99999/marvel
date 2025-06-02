@@ -16,7 +16,7 @@
 
 | Service | URL |
 |---------|-----|
-| **Frontend** | [https://your-frontend-url.vercel.app](https://your-frontend-url.vercel.app) |
+| **Frontend** | [vercel](https://marvel-nine-coral.vercel.app/) |
 <!-- | **Backend API** | [https://your-backend-url.onrender.com](https://your-backend-url.onrender.com) | -->
 
 ## 🏗️ Architecture
