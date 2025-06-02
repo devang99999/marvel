@@ -115,7 +115,7 @@ function Chat() {
     localStorage.setItem("chatId", newId);
     setChatHistory([]);
     setRecommendations([]);
-    navigate(`/c?c=${newId}`);
+    navigate(`/?c=${newId}`);
   };
 
   // Logout
@@ -133,7 +133,7 @@ function Chat() {
         onSelect={(chatId) => {
           setSelectedChat(chatId);
           localStorage.setItem("chatId", chatId);
-          navigate(`/c?c=${chatId}`);
+          navigate(`/?c=${chatId}`);
         }}
       />
 
