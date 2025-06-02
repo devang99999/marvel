@@ -17,9 +17,8 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={isAuthenticated ? <Chat /> : <Navigate to="/auth" />}
+          element={isAuthenticated ? <Chat /> : <LoginRegister />}
         />
-        <Route path="/auth" element={<LoginRegister />} />
       </Routes>
     </Router>
   );
