@@ -41,12 +41,12 @@ function Chat() {
       const storedChatId = localStorage.getItem("chatId");
       if (storedChatId) {
         setSelectedChat(storedChatId);
-        navigate(`/c?c=${storedChatId}`, { replace: true });
+        navigate(`/?c=${storedChatId}`, { replace: true });
       } else {
         const newChatId = crypto.randomUUID();
         setSelectedChat(newChatId);
         localStorage.setItem("chatId", newChatId);
-        navigate(`/c?c=${newChatId}`, { replace: true });
+        navigate(`/?c=${newChatId}`, { replace: true });
       }
     }
   }, [location.search, navigate]);
