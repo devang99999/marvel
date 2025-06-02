@@ -19,6 +19,10 @@ function App() {
           path="/"
           element={isAuthenticated ? <Chat /> : <LoginRegister />}
         />
+         <Route
+        path="*"
+        element={<> <center><h1>404 NOT FOUND <br/> <a href="/">go to home page</a></h1></center></>}
+      />
       </Routes>
     </Router>
   );
