@@ -19,7 +19,7 @@ function App() {
           path="/"
           element={isAuthenticated ? <Chat /> : <Navigate to="/auth" />}
         />
-        <Route path="/c/:chatId" element={isAuthenticated ? <Chat /> : <Navigate to="/auth" />} />
+        <Route path="/c" element={isAuthenticated ? <Chat /> : <Navigate to="/auth" />} />
         {/* <Route path="/" element={<Chat />} /> fallback to generate new */}
         <Route path="/auth" element={<LoginRegister />} />
       </Routes>

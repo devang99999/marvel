@@ -79,7 +79,7 @@ def search_chunks(keywords, limit=SEARCH_LIMIT):
     matched_chunks = []
     for doc in results:
         for chunk in doc.get("classified", []):
-            if any(kw.lower() in chunk.get("topic", "").lower() or
+            if any(kw.lower() in (str(chunk.get("topic") or "")).lower() or
                    any(kw.lower() in tag.lower() for tag in chunk.get("tags", []))
                    for kw in keywords):
                 matched_chunks.append(chunk)
@@ -91,28 +91,53 @@ def search_chunks(keywords, limit=SEARCH_LIMIT):
     return matched_chunks
 
 # 💬 Generate answer from context using Groq
-def generate_answer(question, context_chunks):
+def format_context_history(context_history):
+    """
+    Convert list of message dicts into readable text format:
+    User: ...
+    Assistant: ...
+    """
+    formatted = []
+    for message in context_history:
+        role = message.get("role", "")
+        content = message.get("content", "")
+        if role == "user":
+            formatted.append(f"User: {content}")
+        elif role == "assistant":
+            formatted.append(f"Assistant: {content}")
+        else:
+            # in case of other roles
+            formatted.append(f"{role.capitalize()}: {content}")
+    return "\n".join(formatted)
+
+def generate_answer(question, context_chunks, context_history):
     context_text = "\n\n".join(
         f"Topic: {chunk.get('topic', '')}\nCharacters: {', '.join(chunk.get('characters', []))}\nTags: {', '.join(chunk.get('tags', []))}"
         for chunk in context_chunks
     )
+    
+    formatted_history = format_context_history(context_history)
 
     prompt = f"""
-You are a Marvel chatbot god, created by Devang Gandhi, an AI engineer. 
+You are a "God", created by "Devang Gandhi", an AI engineer. 
 You are still learning and improving every day. 
 Your job is to help users with questions related to the Marvel universe. 
 Do not mention 'data chunks' in your answers — just respond naturally and helpfully. 
 You also dislike the DC Universe and DCEU but you do like Batman, Superman, and The Flash from DC. 
 Always provide concise, accurate, and engaging answers based on your knowledge.
     
-Context:
+Current_Context:
 {context_text}
+
+Full_Context:
+{formatted_history}
 
 Question:
 {question}
 
 Answer:
 """
+
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
@@ -124,9 +149,10 @@ Answer:
             {"role": "user", "content": prompt}
         ],
         "temperature": 0.5,
-        "max_tokens": 500
+        "max_tokens": 1500
     }
 
+    print("prompt:", prompt)
     try:
         response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload)
         response.raise_for_status()
@@ -405,6 +431,15 @@ def login():
 #     )
 
 #     return jsonify({"answer": answer, "chat_id": chat_id})
+def context_search(chat_id, user_id):
+    coll = chat_collection.find_one({"chat_id": chat_id, "user_id": user_id})
+    if coll and "messages" in coll:
+        print(f"[context_search] Found {len(coll['messages'])} messages for chat_id={chat_id}")
+        return coll["messages"]
+    else:
+        print(f"[context_search] No chat found for chat_id={chat_id} and user_id={user_id}")
+        return []
+
 @app.route("/chat-response", methods=["POST"])
 def chat_response():
     data = request.json
@@ -433,10 +468,11 @@ def chat_response():
         answer = cached["answer"]
     else:
         # 2. Extract keywords and search DB
+        context = context_search(chat_id, user_id)
         keywords = extract_keywords(question)
         matched_chunks = search_chunks(keywords)
         if matched_chunks:
-            answer = generate_answer(question, matched_chunks)
+            answer = generate_answer(question, matched_chunks,context)
         else:
             # 3. Web fallback
             content = live_web_search_fallback(question)
@@ -498,7 +534,7 @@ def get_chat_by_id(chat_id,user_id):
             "chat_id": chat_id,
             "user_id": user_id
         })
-        print(chat)
+        
 
         if not chat:
             return jsonify({"error": "Chat not found"}), 404

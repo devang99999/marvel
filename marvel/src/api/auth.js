@@ -1,4 +1,4 @@
-const BASE_URL = 'https://9tw16vkj-5000.inc1.devtunnels.ms';
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export async function login(email, password) {
   try {

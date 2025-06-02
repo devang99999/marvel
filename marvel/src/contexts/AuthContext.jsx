@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
@@ -11,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password, navigate) => {
     setLoading(true);
     try {
-      const res = await fetch('https://9tw16vkj-5000.inc1.devtunnels.ms/login', {
+      const res = await fetch(`${BASE_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -39,7 +40,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (email, password, navigate) => {
     setLoading(true);
     try {
-      const res = await fetch('https://9tw16vkj-5000.inc1.devtunnels.ms/register', {
+      const res = await fetch(`${BASE_URL}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

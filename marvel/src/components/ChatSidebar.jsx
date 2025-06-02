@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 
 function ChatSidebar({ onSelect, darkMode }) {
   const [chatSessions, setChatSessions] = useState([]);
@@ -9,7 +11,7 @@ function ChatSidebar({ onSelect, darkMode }) {
     async function fetchChatSessions() {
       if (!userId) return;
       try {
-        const res = await fetch(`https://9tw16vkj-5000.inc1.devtunnels.ms/chats/${userId}`);
+        const res = await fetch(`${BASE_URL}/chats/${userId}`);
         if (!res.ok) throw new Error("Failed to fetch chat sessions");
         const data = await res.json();
         setChatSessions(data);

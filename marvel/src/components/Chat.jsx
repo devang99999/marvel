@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import ChatMessage from "./ChatMessage.jsx";
 import ChatInput from "./ChatInput.jsx";
@@ -7,17 +7,15 @@ import ChatSidebar from "./ChatSidebar.jsx";
 import DarkModeToggle from "./DarkModeToggle.jsx";
 import ContextRecommendations from "./ContextRecommendations.jsx";
 
-import {
-  getRecommendations,
-  getChatResponse,
-} from "../api/chatapi.js";
+import { getRecommendations, getChatResponse } from "../api/chatapi.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../index.css";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 function Chat() {
-  const { chatId: paramChatId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [chatHistory, setChatHistory] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
@@ -26,8 +24,16 @@ function Chat() {
 
   const chatBottomRef = useRef(null);
 
-  // On mount: determine chatId (from URL param, localStorage, or new)
+  // Get chatId from query string
+  const getChatIdFromQuery = () => {
+    const query = new URLSearchParams(location.search);
+    return query.get("c");
+  };
+
+  // On mount: determine chatId (from query string, localStorage, or create new)
   useEffect(() => {
+    const paramChatId = getChatIdFromQuery();
+
     if (paramChatId) {
       setSelectedChat(paramChatId);
       localStorage.setItem("chatId", paramChatId);
@@ -35,32 +41,26 @@ function Chat() {
       const storedChatId = localStorage.getItem("chatId");
       if (storedChatId) {
         setSelectedChat(storedChatId);
-        navigate(`/c/${storedChatId}`, { replace: true });
+        navigate(`/c?c=${storedChatId}`, { replace: true });
       } else {
         const newChatId = crypto.randomUUID();
         setSelectedChat(newChatId);
         localStorage.setItem("chatId", newChatId);
-        navigate(`/c/${newChatId}`, { replace: true });
+        navigate(`/c?c=${newChatId}`, { replace: true });
       }
     }
-  }, [paramChatId, navigate]);
+  }, [location.search, navigate]);
 
-  // Fetch chat history from backend using chatId + userId
+  // Fetch chat history from backend
   useEffect(() => {
     const fetchHistory = async () => {
       if (!selectedChat) return;
       const userId = localStorage.getItem("userId");
       if (!userId) return;
 
-      // try {
-      //   const res = await fetch(
-      //     `https://9tw16vkj-5000.inc1.devtunnels.ms/chat/${selectedChat}`
-          
-      //   );
       try {
         const res = await fetch(
-          `https://9tw16vkj-5000.inc1.devtunnels.ms/chat/${selectedChat}/${userId}`
-          
+          `${BASE_URL}/chat/${selectedChat}/${userId}`
         );
         if (!res.ok) throw new Error("Chat not found");
         const data = await res.json();
@@ -74,7 +74,7 @@ function Chat() {
     fetchHistory();
   }, [selectedChat]);
 
-  // Scroll to bottom after loading chat
+  // Scroll to bottom when chat updates
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory]);
@@ -87,7 +87,7 @@ function Chat() {
     document.body.classList.toggle("text-dark", !darkMode);
   }, [darkMode]);
 
-  // Handle sending message
+  // Handle sending a new message
   const handleSend = async (msg) => {
     if (!msg.trim()) return;
 
@@ -108,14 +108,14 @@ function Chat() {
     }
   };
 
-  // Start a new chat session
+  // Start new chat
   const startNewChat = () => {
     const newId = crypto.randomUUID();
     setSelectedChat(newId);
     localStorage.setItem("chatId", newId);
     setChatHistory([]);
     setRecommendations([]);
-    navigate(`/c/${newId}`);
+    navigate(`/c?c=${newId}`);
   };
 
   // Logout
@@ -133,7 +133,7 @@ function Chat() {
         onSelect={(chatId) => {
           setSelectedChat(chatId);
           localStorage.setItem("chatId", chatId);
-          navigate(`/c/${chatId}`);
+          navigate(`/c?c=${chatId}`);
         }}
       />
 
@@ -159,11 +159,7 @@ function Chat() {
 
         <div className="flex-grow-1 overflow-auto p-3">
           <ChatMessage messages={chatHistory} />
-          {/* <ContextRecommendations
-            recommendations={recommendations}
-            
-            darkMode={darkMode}
-          /> */}
+          {/* <ContextRecommendations recommendations={recommendations} darkMode={darkMode} /> */}
           <div ref={chatBottomRef} />
         </div>
 
