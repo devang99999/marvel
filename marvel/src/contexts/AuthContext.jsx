@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Registration failed");
+      // if (!res.ok) throw new Error(data.message || "Registration failed");
 
       if (!data.user || !data.user.id) {
         throw new Error("User data missing in response");
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("userId", data.user.id);
       localStorage.setItem("email", data.user.email);
       setUser(data.user);
-
+      alert("account created")
       window.location.replace("/");
     } catch (err) {
       throw err;
