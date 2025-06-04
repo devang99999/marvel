@@ -1,6 +1,6 @@
 // src/contexts/AuthContext.jsx
-import React, { createContext, useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 const BASE_URL = import.meta.env.VITE_API_URL;
@@ -13,23 +13,23 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await fetch(`${BASE_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Login failed');
+      if (!res.ok) throw new Error(data.message || "Login failed");
 
       if (!data.user || !data.user.id) {
-        throw new Error('User data missing in response');
+        throw new Error("User data missing in response");
       }
 
-      localStorage.setItem('userId', data.user.id);
-      localStorage.setItem('email', data.user.email);
+      localStorage.setItem("userId", data.user.id);
+      localStorage.setItem("email", data.user.email);
       setUser(data.user);
 
-      window.location.replace("/")
+      window.location.replace("/");
     } catch (err) {
       throw err;
     } finally {
@@ -41,23 +41,23 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await fetch(`${BASE_URL}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Registration failed');
+      if (!res.ok) throw new Error(data.message || "Registration failed");
 
       if (!data.user || !data.user.id) {
-        throw new Error('User data missing in response');
+        throw new Error("User data missing in response");
       }
 
-      localStorage.setItem('userId', data.user.id);
-      localStorage.setItem('email', data.user.email);
+      localStorage.setItem("userId", data.user.id);
+      localStorage.setItem("email", data.user.email);
       setUser(data.user);
 
-      if (navigate) navigate('/');
+      window.location.replace("/");
     } catch (err) {
       throw err;
     } finally {
@@ -66,10 +66,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = (navigate) => {
-    localStorage.removeItem('userId');
-    localStorage.removeItem('email');
+    localStorage.removeItem("userId");
+    localStorage.removeItem("email");
     setUser(null);
-    if (navigate) navigate('/login');
+    if (navigate) navigate("/login");
   };
 
   return (
