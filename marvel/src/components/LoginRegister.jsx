@@ -87,6 +87,9 @@ export default function LoginRegister() {
                   If it's inactive, it may take up to 30 seconds to wake up.
                   Please be patient
                 </p>
+                <p>
+                  just use <b> test2@test.com </b> as email and <b> password </b> as password to test this project
+                </p>
                 <p className="mb-0">
                   Or click below to manually ping the backend:
                 </p>
