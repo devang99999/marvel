@@ -30,6 +30,10 @@ def add_cors_headers(response):
 def cors_preflight(path):
     return "", 204
 
+@app.errorhandler(405)
+def method_not_allowed(e):
+    return jsonify({"error": "Method not allowed", "path": request.path, "method": request.method}), 405
+
 # MongoDB Setup (certifi fixes SSL cert verify failed on macOS)
 MONGO_URI = os.getenv("mongo")
 if not MONGO_URI:
@@ -417,8 +421,8 @@ def recommendations():
     return jsonify(suggestions)
 
 
-# 🌐 Root route
-@app.route("/")
+# 🌐 Root route (GET only — avoids 405 if something sends wrong method)
+@app.route("/", methods=["GET"])
 def home():
     return "🚀 Welcome to the Marvel Chatbot API!"
 
