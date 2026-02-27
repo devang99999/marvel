@@ -1,6 +1,8 @@
 .DS_Store
 .env
-server_prime.py
-!marvel/server_prime.py
-test.py
-test_2.py
+backend/.env
+frontend/.env
+node_modules
+__pycache__
+*.pyc
+venv

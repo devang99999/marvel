@@ -1,12 +1,21 @@
+# Backend (Flask API)
 services:
   - type: web
     name: marvel-chatbot-backend
     runtime: python
+    rootDir: backend
     buildCommand: |
       pip install -r requirements.txt
       playwright install --with-deps
     startCommand: gunicorn server_prime:app --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
-        value: 3.10
-buildCommand: ./postbuild.sh
+        value: "3.10"
+
+  # Frontend (Vite/React static site)
+  - type: web
+    name: marvel-chatbot-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
