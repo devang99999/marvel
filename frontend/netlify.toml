@@ -1,0 +1,12 @@
+# Netlify build config for Vite/React frontend
+# In Netlify UI: set "Base directory" to "frontend" (or leave empty if this repo is frontend-only)
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA: serve index.html for client-side routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
