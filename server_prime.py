@@ -238,10 +238,20 @@ def recommendations():
         suggestions = ["Iron Man", "Captain America", "Marvel Cinematic Universe"]
     return jsonify(suggestions)
 
-# 🌐 Root route (GET only)
+# 🌐 Root route (GET only) — minimal HTML so visiting the URL doesn’t show a black/blank screen
 @app.route("/", methods=["GET"])
 def home():
-    return "🚀 Welcome to the Marvel Chatbot API!"
+    html = """<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Marvel Chatbot API</title>
+<style>body{font-family:system-ui,sans-serif;max-width:32rem;margin:3rem auto;padding:0 1rem;background:#f5f5f5;color:#111;}
+h1{font-size:1.25rem;} a{color:#0066cc;} p{color:#444;}</style></head>
+<body>
+<h1>🚀 Marvel Chatbot API</h1>
+<p>Backend is running. Use the app at <a href="https://marvel-nine-coral.vercel.app/">marvel-nine-coral.vercel.app</a>.</p>
+<p>If this took a while to load, the service was waking up (Render free tier).</p>
+</body></html>"""
+    return html
 
 # 🔐 Auth routes (for frontend login/register)
 @app.route("/register", methods=["POST"])
