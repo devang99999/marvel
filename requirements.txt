@@ -1,6 +1,8 @@
 flask
 flask-cors
+gunicorn
 pymongo
+certifi
 python-dotenv
 beautifulsoup4
 playwright
