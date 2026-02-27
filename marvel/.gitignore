@@ -26,6 +26,6 @@ marvel\src\components\test.jsx
 *.sw?
 
 # Python
-server_prime.py
+# server_prime.py  # un-ignored so backend (CORS, gunicorn) can be deployed
 test.py
 test_2.py

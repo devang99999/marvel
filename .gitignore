@@ -1,5 +1,6 @@
 .DS_Store
 .env
 server_prime.py
+!marvel/server_prime.py
 test.py
 test_2.py
