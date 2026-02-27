@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: marvel-chatbot-backend
+    runtime: python
+    buildCommand: |
+      pip install -r requirements.txt
+      playwright install --with-deps
+    startCommand: python main.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10
+buildCommand: ./postbuild.sh
