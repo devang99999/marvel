@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-function ChatInput({ onSend, darkMode }) {
+function ChatInput({ onSend, darkMode, disabled = false }) {
   const [msg, setMsg] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (msg.trim()) {
+    if (msg.trim() && !disabled) {
       onSend(msg);
       setMsg("");
     }
@@ -26,9 +26,10 @@ function ChatInput({ onSend, darkMode }) {
         className={`form-control ${
           darkMode ? "bg-secondary text-white border-secondary" : ""
         }`}
+        disabled={disabled}
       />
-      <button type="submit" className="btn btn-primary">
-        Send
+      <button type="submit" className="btn btn-primary" disabled={disabled}>
+        {disabled ? "Sending..." : "Send"}
       </button>
     </form>
   );

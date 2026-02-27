@@ -5,9 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import LoginRegister from "./components/LoginRegister.jsx";
-// import Register from "./pages/Register";
 import Chat from "./components/Chat.jsx";
-// import LoginRegister from "./components/test.jsx"  // the file where you move your current chatbot logic
 
 function App() {
   const isAuthenticated = !!localStorage.getItem("userId");
@@ -17,12 +15,44 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={isAuthenticated ? <Chat /> : <LoginRegister />}
+          element={
+            isAuthenticated ? (
+              <Navigate to="/chat" replace />
+            ) : (
+              <LoginRegister />
+            )
+          }
         />
-         <Route
-        path="*"
-        element={<> <center><h1>404 NOT FOUND <br/> <a href="/">go to home page</a></h1></center></>}
-      />
+        <Route
+          path="/chat"
+          element={
+            isAuthenticated ? (
+              <Chat />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route
+          path="/chat/:chatId"
+          element={
+            isAuthenticated ? (
+              <Chat />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <center>
+              <h1>404 NOT FOUND</h1>
+              <br />
+              <a href="/">go to home page</a>
+            </center>
+          }
+        />
       </Routes>
     </Router>
   );

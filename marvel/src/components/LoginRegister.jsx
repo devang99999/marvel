@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 
@@ -10,18 +10,23 @@ export default function LoginRegister() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(true);
+  const submittingRef = useRef(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setError(null);
     try {
-      if (mode === "login") {
-        await login(email, password, navigate);
-      } else {
+      if (mode === "register") {
         await register(email, password, navigate);
+      } else {
+        await login(email, password, navigate);
       }
-    } catch {
-      setError("Failed to " + (mode === "login" ? "login" : "register"));
+    } catch (err) {
+      setError(err.message || "Failed to " + (mode === "login" ? "login" : "register"));
+    } finally {
+      submittingRef.current = false;
     }
   };
 
@@ -88,13 +93,13 @@ export default function LoginRegister() {
                   Please be patient
                 </p>
                 <p>
-                  just use <b> test2@test.com </b> as email and <b> password </b> as password to test this project
+                  Create an account or login to get started!
                 </p>
                 <p className="mb-0">
                   Or click below to manually ping the backend:
                 </p>
                 <a
-                  href="https://marvel-b1wd.onrender.com/"
+                  href={import.meta.env.VITE_BACKEND_WAKE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-outline-primary mt-3"
@@ -108,7 +113,7 @@ export default function LoginRegister() {
                 </button>
               </div>
               <div className="modal-footer justify-content-center">
-                <a target="_balnk" href="https://www.linkedin.com/in/webdevanggandhi/">
+                <a target="_blank" href="https://www.linkedin.com/in/webdevanggandhi/" rel="noopener noreferrer">
                   <button className="btn btn-primary" onClick={closeModal}>
                     Or just text me
                   </button>

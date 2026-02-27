@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Login failed");
+      if (!res.ok) throw new Error(data.error || data.message || "Login failed");
 
       if (!data.user || !data.user.id) {
         throw new Error("User data missing in response");
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("email", data.user.email);
       setUser(data.user);
 
-      window.location.replace("/");
+      window.location.replace("/chat");
     } catch (err) {
       throw err;
     } finally {
@@ -40,14 +40,14 @@ export const AuthProvider = ({ children }) => {
   const register = async (email, password, navigate) => {
     setLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/register`, {
+      const res = await fetch(`${BASE_URL}/register`, { // signup → register API, not /login
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
-      // if (!res.ok) throw new Error(data.message || "Registration failed");
+      if (!res.ok) throw new Error(data.error || data.message || "Registration failed");
 
       if (!data.user || !data.user.id) {
         throw new Error("User data missing in response");
@@ -56,8 +56,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("userId", data.user.id);
       localStorage.setItem("email", data.user.email);
       setUser(data.user);
-      alert("account created")
-      window.location.replace("/");
+
+      window.location.replace("/chat");
     } catch (err) {
       throw err;
     } finally {

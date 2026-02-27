@@ -1,6 +1,6 @@
 // src/chatapi.js
 
-const BASE_URL = import.meta.env.VITE_API_URL; // Your Flask backend
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'; // Your Flask backend
 
 // Auth headers using userId as token
 const getAuthHeaders = () => {
@@ -11,9 +11,9 @@ const getAuthHeaders = () => {
   };
 };
 
-// ✅ Fetch chat sessions by user ID
+// ✅ Fetch chat sessions by user ID (sidebar list)
 export async function fetchChatSessions(userId) {
-  const res = await fetch(`${BASE_URL}/chat_sessions/${userId}`, {
+  const res = await fetch(`${BASE_URL}/chats/${userId}`, {
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
@@ -50,12 +50,15 @@ export async function getChatResponse(messages, chatId) {
     body: JSON.stringify({ messages, userId: token, chatId }),
   });
   if (!res.ok) {
-    throw new Error("Failed to get chat response");
+    const errorText = await res.text();
+    throw new Error(`Failed to get chat response: ${res.status} - ${errorText}`);
   }
   const data = await res.json();
   return {
     answer: data.answer,
     chatId: data.chat_id,
+    source: data.source ?? null,
+    chunksUsed: data.chunks_used ?? 0,
   };
 }
 

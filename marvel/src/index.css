@@ -141,4 +141,24 @@ header {
   .main-chat {
     padding: 1rem;
   }
+
+  /* Make sidebar narrower on tablets/mobile */
+  aside {
+    width: 60px !important;
+    min-width: 60px !important;
+  }
+
+  /* Hide chat text, keep icons only */
+  aside h2 span {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Even smaller on mobile */
+  aside {
+    width: 50px !important;
+    min-width: 50px !important;
+    padding: 0.5rem !important;
+  }
 }

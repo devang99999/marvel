@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import ChatMessage from "./ChatMessage.jsx";
 import ChatInput from "./ChatInput.jsx";
@@ -7,71 +7,57 @@ import ChatSidebar from "./ChatSidebar.jsx";
 import DarkModeToggle from "./DarkModeToggle.jsx";
 import ContextRecommendations from "./ContextRecommendations.jsx";
 
-import { getRecommendations, getChatResponse } from "../api/chatapi.js";
+import { getRecommendations, getChatResponse, getChatHistory } from "../api/chatapi.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../index.css";
-const BASE_URL = import.meta.env.VITE_API_URL;
 
 function Chat() {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { chatId: urlChatId } = useParams();
 
   const [chatHistory, setChatHistory] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [selectedChat, setSelectedChat] = useState("");
   const [darkMode, setDarkMode] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sidebarRefresh, setSidebarRefresh] = useState(0);
 
   const chatBottomRef = useRef(null);
 
-  // Get chatId from query string
-  const getChatIdFromQuery = () => {
-    const query = new URLSearchParams(location.search);
-    return query.get("c");
-  };
-
-  // On mount: determine chatId (from query string, localStorage, or create new)
+  // Sync selectedChat from URL (dynamic route /chat/:chatId)
   useEffect(() => {
-    const paramChatId = getChatIdFromQuery();
-
-    if (paramChatId) {
-      setSelectedChat(paramChatId);
-      localStorage.setItem("chatId", paramChatId);
+    if (urlChatId) {
+      setSelectedChat(urlChatId);
+      localStorage.setItem("chatId", urlChatId);
     } else {
       const storedChatId = localStorage.getItem("chatId");
       if (storedChatId) {
-        setSelectedChat(storedChatId);
-        navigate(`/?c=${storedChatId}`, { replace: true });
+        navigate(`/chat/${storedChatId}`, { replace: true });
       } else {
         const newChatId = crypto.randomUUID();
         setSelectedChat(newChatId);
         localStorage.setItem("chatId", newChatId);
-        navigate(`/?c=${newChatId}`, { replace: true });
+        navigate(`/chat/${newChatId}`, { replace: true });
       }
     }
-  }, [location.search, navigate]);
+  }, [urlChatId, navigate]);
 
-  // Fetch chat history from backend
+  // Load chat history when switching to a chat
   useEffect(() => {
-    const fetchHistory = async () => {
-      if (!selectedChat) return;
-      const userId = localStorage.getItem("userId");
-      if (!userId) return;
-
-      try {
-        const res = await fetch(
-          `${BASE_URL}/chat/${selectedChat}/${userId}`
-        );
-        if (!res.ok) throw new Error("Chat not found");
-        const data = await res.json();
-        setChatHistory(data.messages);
-      } catch (error) {
-        console.error("Failed to load chat history:", error);
-        setChatHistory([]);
-      }
-    };
-
-    fetchHistory();
+    if (!selectedChat) {
+      setChatHistory([]);
+      return;
+    }
+    let cancelled = false;
+    getChatHistory(selectedChat)
+      .then((messages) => {
+        if (!cancelled) setChatHistory(messages || []);
+      })
+      .catch(() => {
+        if (!cancelled) setChatHistory([]);
+      });
+    return () => { cancelled = true; };
   }, [selectedChat]);
 
   // Scroll to bottom when chat updates
@@ -89,22 +75,36 @@ function Chat() {
 
   // Handle sending a new message
   const handleSend = async (msg) => {
-    if (!msg.trim()) return;
+    if (!msg.trim() || isLoading) return;
 
     const newEntry = { role: "user", content: msg };
     const updatedChat = [...chatHistory, newEntry];
     setChatHistory(updatedChat);
+    setIsLoading(true);
 
     try {
       const res = await getChatResponse(updatedChat, selectedChat);
-      const responseEntry = { role: "assistant", content: res.answer };
+      const responseEntry = {
+        role: "assistant",
+        content: res.answer,
+        source: res.source ?? null,
+        chunksUsed: res.chunksUsed ?? 0,
+      };
       const finalChat = [...updatedChat, responseEntry];
       setChatHistory(finalChat);
+      setSidebarRefresh((n) => n + 1);
 
       const recs = await getRecommendations(finalChat);
       setRecommendations(recs);
     } catch (error) {
       console.error("Error during chat:", error);
+      const errorEntry = {
+        role: "assistant",
+        content: "Sorry, I encountered an error. Please try again or check your connection."
+      };
+      setChatHistory([...updatedChat, errorEntry]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -115,7 +115,7 @@ function Chat() {
     localStorage.setItem("chatId", newId);
     setChatHistory([]);
     setRecommendations([]);
-    navigate(`/?c=${newId}`);
+    navigate(`/chat/${newId}`);
   };
 
   // Logout
@@ -130,10 +130,11 @@ function Chat() {
     <div className="d-flex vh-100 overflow-hidden">
       <ChatSidebar
         darkMode={darkMode}
+        refreshTrigger={sidebarRefresh}
         onSelect={(chatId) => {
           setSelectedChat(chatId);
           localStorage.setItem("chatId", chatId);
-          navigate(`/?c=${chatId}`);
+          navigate(`/chat/${chatId}`);
         }}
       />
 
@@ -158,13 +159,21 @@ function Chat() {
         </div>
 
         <div className="flex-grow-1 overflow-auto p-3">
-          <ChatMessage messages={chatHistory} />
+          <ChatMessage messages={chatHistory} darkMode={darkMode} />
+          {isLoading && (
+            <div className="text-center my-3">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className="mt-2">Thinking...</p>
+            </div>
+          )}
           {/* <ContextRecommendations recommendations={recommendations} darkMode={darkMode} /> */}
           <div ref={chatBottomRef} />
         </div>
 
         <div className="border-top p-3">
-          <ChatInput darkMode={darkMode} onSend={handleSend} />
+          <ChatInput darkMode={darkMode} onSend={handleSend} disabled={isLoading} />
         </div>
       </main>
     </div>
