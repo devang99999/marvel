@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Login failed");
+      if (!res.ok) throw new Error(data.error || data.message || "Login failed");
 
       if (!data.user || !data.user.id) {
         throw new Error("User data missing in response");
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Registration failed");
+      if (!res.ok) throw new Error(data.error || data.message || "Registration failed");
 
       if (!data.user || !data.user.id) {
         throw new Error("User data missing in response");

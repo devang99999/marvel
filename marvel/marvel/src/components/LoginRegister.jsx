@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 
@@ -10,9 +10,12 @@ export default function LoginRegister() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(true);
+  const submittingRef = useRef(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setError(null);
     try {
       if (mode === "register") {
@@ -20,8 +23,10 @@ export default function LoginRegister() {
       } else {
         await login(email, password, navigate);
       }
-    } catch {
-      setError("Failed to " + (mode === "login" ? "login" : "register"));
+    } catch (err) {
+      setError(err.message || "Failed to " + (mode === "login" ? "login" : "register"));
+    } finally {
+      submittingRef.current = false;
     }
   };
 
