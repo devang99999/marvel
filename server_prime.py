@@ -9,6 +9,32 @@ from dotenv import load_dotenv
 load_dotenv()
 app = Flask(__name__)
 
+# CORS: allow Vercel frontend + local dev (required for browser requests from another origin)
+CORS_ORIGINS = [
+    "https://marvel-nine-coral.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
+]
+
+@app.after_request
+def add_cors_headers(response):
+    origin = (request.headers.get("Origin") or "").rstrip("/")
+    if origin in CORS_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+    else:
+        response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Accept"
+    response.headers["Access-Control-Expose-Headers"] = "Content-Type"
+    return response
+
+@app.route("/", defaults={"path": ""}, methods=["OPTIONS"])
+@app.route("/<path:path>", methods=["OPTIONS"])
+def cors_preflight(path):
+    return "", 204
+
 # MongoDB Setup
 MONGO_URI = os.getenv("mongo")
 if not MONGO_URI:

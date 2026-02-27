@@ -15,23 +15,10 @@ _env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
 load_dotenv(_env_path)
 app = Flask(__name__)
 
-# Allowed origins for CORS (frontend on Vercel + local dev)
-CORS_ORIGINS = [
-    "https://marvel-nine-coral.vercel.app",
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:3000",
-]
-
-# CORS on every response (including 404/405) so browser never shows "CORS error" instead of real status
+# Allowed origins for CORS (frontend on Vercel + local dev). Use * to avoid any CORS rejections.
 @app.after_request
 def add_cors_headers(response):
-    origin = (request.headers.get("Origin") or "").rstrip("/")
-    if origin in CORS_ORIGINS:
-        response.headers["Access-Control-Allow-Origin"] = origin
-    else:
-        response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Accept"
     response.headers["Access-Control-Expose-Headers"] = "Content-Type"
