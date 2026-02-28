@@ -48,6 +48,8 @@ if not GROQ_API_KEY:
     raise ValueError("GROQ_API_KEY environment variable is not set.")
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+# Use current production model (llama3-8b-8192 is deprecated)
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
 SEARCH_LIMIT = 5
 
 # 🧠 Extract keywords using Groq (LLM-based)
@@ -63,7 +65,7 @@ Question:
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "llama3-8b-8192",
+        "model": GROQ_MODEL,
         "messages": [
             {"role": "system", "content": "You are a keyword extractor for Marvel questions. Return only a JSON list of keywords."},
             {"role": "user", "content": prompt}
@@ -131,7 +133,7 @@ Answer:
     }
 
     payload = {
-        "model": "llama3-8b-8192",
+        "model": GROQ_MODEL,
         "messages": [
             {"role": "system", "content": "You are a helpful Marvel chatbot assistant."},
             {"role": "user", "content": prompt}
@@ -202,6 +204,17 @@ def chat_response():
         chat_history_collection.insert_one({"chat_id": chat_id, "user_id": user_id, "question": question, "answer": answer, "timestamp": now})
     return jsonify({"answer": answer, "chat_id": chat_id, "source": source, "chunks_used": len(matched_chunks)})
 
+# GET /chat/<chat_id>/<user_id> — alias for history (fixes 405 from some clients)
+@app.route("/chat/<chat_id>/<user_id>", methods=["GET"])
+def get_chat_history_legacy(chat_id, user_id):
+    try:
+        docs = list(chat_history_collection.find({"chat_id": chat_id}).sort("timestamp", 1))
+        return jsonify([{"question": d["question"], "answer": d["answer"]} for d in docs])
+    except Exception as e:
+        print(f"❌ get_chat_history_legacy: {e}")
+        return jsonify([])
+
+
 @app.route("/chats/<user_id>", methods=["GET"])
 def get_chats(user_id):
     try:
@@ -248,7 +261,7 @@ def home():
 h1{font-size:1.25rem;} a{color:#0066cc;} p{color:#444;}</style></head>
 <body>
 <h1>🚀 Marvel Chatbot API</h1>
-<p>Backend is running. Use the app at <a href="https://marvel-nine-coral.vercel.app/">marvel-nine-coral.vercel.app</a>.</p>
+<p>Backend is running. Use the app at <a href="https://rag-model-by-devang.netlify.app">marvel-nine-coral.vercel.app</a>.</p>
 <p>If this took a while to load, the service was waking up (Render free tier).</p>
 </body></html>"""
     return html
