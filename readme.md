@@ -223,6 +223,7 @@ cd marvel && npm run dev
 - **Backend**: Run with `gunicorn server_prime:app` (e.g. in Render); set `FLASK_ENV=production` or `DEBUG=0`. Do not run `python server_prime.py` in production (debug mode off when env is set).
 - **Secrets**: Set `MONGO_URI`, `JWT_SECRET_KEY`, `GROQ_API_KEY` in the Render dashboard (or your platform); do not put secrets in `render.yaml`.
 - **Frontend**: Build with `cd frontend && npm run build` and deploy the `dist` folder.
+- **Keep Render awake**: A GitHub Actions workflow (`.github/workflows/ping-render.yml`) pings the backend every 14 minutes so the free tier doesn’t sleep. Default URL is `https://marvel-b1wd.onrender.com/`; override with repo variable `RENDER_BACKEND_URL` in Settings → Actions → Variables.
 
 ## 🤝 Contributing
 

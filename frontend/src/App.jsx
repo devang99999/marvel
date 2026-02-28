@@ -8,7 +8,7 @@ import LoginRegister from "./components/LoginRegister.jsx";
 import Chat from "./components/Chat.jsx";
 
 function App() {
-  const isAuthenticated = !!localStorage.getItem("userId");
+  const isAuthenticated = !!localStorage.getItem("token");
 
   return (
     <Router>
