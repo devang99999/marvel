@@ -9,7 +9,7 @@ export default function LoginRegister() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const submittingRef = useRef(false);
 
   const handleSubmit = async (e) => {
@@ -54,7 +54,7 @@ export default function LoginRegister() {
       />
 
       {/* Modal */}
-      {showModal && (
+      {/* {showModal && (
         <div
           className="modal fade show"
           style={{ display: "block", backgroundColor: "rgba(0,0,0,0.6)" }}
@@ -98,14 +98,7 @@ export default function LoginRegister() {
                 <p className="mb-0">
                   Or click below to manually ping the backend:
                 </p>
-                <a
-                  href={import.meta.env.VITE_BACKEND_WAKE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-outline-primary mt-3"
-                >
-                  Wake up backend
-                </a>
+                
               </div>
               <div className="modal-footer justify-content-center">
                 <button className="btn btn-primary" onClick={closeModal}>
@@ -122,7 +115,7 @@ export default function LoginRegister() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Auth Card */}
       <div
