@@ -4,7 +4,7 @@ name: Ping Render (keep awake)
 
 on:
   schedule:
-    - cron: "*/14 * * * *"  # Every 14 minutes
+    - cron: "*/9 * * * *"  # Every 14 minutes
   workflow_dispatch:       # Allow manual run from Actions tab
 
 jobs:
