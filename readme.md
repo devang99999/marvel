@@ -91,12 +91,13 @@ cd marvel-ai-chatbot
 # Install Python dependencies
 pip install -r requirements.txt 
 
-# Configure environment variables
-cp .env.example .env
-# Edit .env with your API keys and MongoDB URI
+# Configure environment variables (see backend/.env.example)
+cd backend && cp .env.example .env
+# Edit .env with MONGO_URI, JWT_SECRET_KEY, GROQ_API_KEY, etc.
 
-# Start the Flask backend
-python phase_4.py
+# Start the Flask backend (development only)
+python server_prime.py
+# Production: use gunicorn (e.g. gunicorn server_prime:app); never run python server_prime.py in production.
 ```
 
 ### 🎨 Frontend Setup
@@ -113,24 +114,27 @@ npm run dev
 ```
 
 Your application will be available at:
-- **Backend**: `http://localhost:5000`
+- **Backend**: `http://localhost:5001` (server_prime.py; use gunicorn in production)
 - **Frontend**: `http://localhost:5173`
 
 ## ⚙️ Environment Configuration
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the `backend` directory (see `backend/.env.example`):
 
 ```env
-# AI & Search APIs
-GROQ_API_KEY=your_groq_api_key_here
-SERPAPI_KEY=your_serpapi_key_here
-
 # Database
 MONGO_URI=mongodb://localhost:27017/marvel_chatbot
 
+# Auth (required for login/register)
+JWT_SECRET_KEY=your_secret_key_at_least_32_chars
 
-# Optional: Deployment
-RENDER_EXTERNAL_URL=https://marvel-b1wd.onrender.com/
+# AI
+GROQ_API_KEY=your_groq_api_key_here
+SERPAPI_KEY=your_serpapi_key_here
+
+# Optional
+FRONTEND_URL=https://your-app.netlify.app
+# Production: set FLASK_ENV=production or DEBUG=0; never put real secrets in render.yaml (use Render dashboard).
 ```
 
 ## 🛠️ Technology Stack
@@ -156,38 +160,36 @@ RENDER_EXTERNAL_URL=https://marvel-b1wd.onrender.com/
 
 ## 🔐 Authentication Flow
 
-1. **Registration/Login**: Users create accounts or sign in
-2. **JWT Token**: Server issues secure JWT tokens
-3. **Token Storage**: Tokens stored securely in localStorage
-4. **Protected Routes**: Chat interface requires valid authentication
-5. **Session Persistence**: Chat history tied to user accounts
+1. **Registration/Login**: Users create accounts or sign in; server validates email format and password length (min 8 characters).
+2. **JWT Token**: Server issues signed JWT tokens (set `JWT_SECRET_KEY` in env).
+3. **Token Storage**: Tokens stored in localStorage; send as `Authorization: Bearer <token>` for protected routes.
+4. **Protected Routes**: `/chat-response`, `/chats/<user_id>`, `/history/<chat_id>` require a valid JWT; server verifies ownership.
+5. **Session Persistence**: Chat history tied to user accounts; production API is `server_prime.py` (phase_*.py are scripts/legacy).
 
 ## 🧪 Testing
 
 Run the test suite to ensure everything works correctly:
 
 ```bash
-
-# Frontend testing
-cd marvel
-npm run dev
+# Frontend
+cd frontend && npm run dev
 ```
 
-## 📊 API Endpoints
+Security checks (optional): `pip install pip-audit && pip-audit` in backend; `npm audit` in frontend.
+
+## 📊 API Endpoints (server_prime.py)
 
 ### Authentication
-- `POST /api/register` - User registration
-- `POST /api/login` - User login
-- `POST /api/logout` - User logout
+- `POST /register` - User registration (returns JWT and user)
+- `POST /login` - User login (returns JWT and user)
 
-### Chat
-- `POST /api/chat` - Send message and get AI response
-- `GET /api/chat/history` - Retrieve chat history
-- `GET /api/chat/sessions` - List all chat sessions
-
-### Search
-- `GET /api/search` - Search Marvel database
-- `POST /api/scrape` - Trigger manual content scraping
+### Chat (protected: send `Authorization: Bearer <JWT>`)
+- `POST /chat` - Send message, get AI response (no auth; RAG-only)
+- `POST /chat-response` - Send messages + optional chatId; returns answer and chat_id (auth required)
+- `GET /chats/<user_id>` - List chat sessions for user (auth required; user_id must match token)
+- `GET /history/<chat_id>` - Get messages for a chat (auth required; chat must belong to user)
+- `GET /chat/<chat_id>/<user_id>` - Alias for history (auth required)
+- `POST /recommendations` - Get follow-up suggestions from messages
 
 ## 🌟 Key Features Deep Dive
 
@@ -218,13 +220,9 @@ cd marvel && npm run dev
 ```
 
 ### **Production**
-```bash
-# Build frontend
-cd marvel && npm run build
-
-# Deploy to Render/AWS/Heroku
-# Configure render.yaml or your preferred platform
-```
+- **Backend**: Run with `gunicorn server_prime:app` (e.g. in Render); set `FLASK_ENV=production` or `DEBUG=0`. Do not run `python server_prime.py` in production (debug mode off when env is set).
+- **Secrets**: Set `MONGO_URI`, `JWT_SECRET_KEY`, `GROQ_API_KEY` in the Render dashboard (or your platform); do not put secrets in `render.yaml`.
+- **Frontend**: Build with `cd frontend && npm run build` and deploy the `dist` folder.
 
 ## 🤝 Contributing
 

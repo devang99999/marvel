@@ -21,10 +21,11 @@ export const AuthProvider = ({ children }) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || data.message || "Login failed");
 
-      if (!data.user || !data.user.id) {
-        throw new Error("User data missing in response");
+      if (!data.user || !data.user.id || !data.token) {
+        throw new Error("User data or token missing in response");
       }
 
+      localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.user.id);
       localStorage.setItem("email", data.user.email);
       setUser(data.user);
@@ -49,10 +50,11 @@ export const AuthProvider = ({ children }) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || data.message || "Registration failed");
 
-      if (!data.user || !data.user.id) {
-        throw new Error("User data missing in response");
+      if (!data.user || !data.user.id || !data.token) {
+        throw new Error("User data or token missing in response");
       }
 
+      localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.user.id);
       localStorage.setItem("email", data.user.email);
       setUser(data.user);
@@ -66,6 +68,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = (navigate) => {
+    localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("email");
     setUser(null);

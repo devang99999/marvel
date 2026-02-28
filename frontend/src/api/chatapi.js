@@ -2,16 +2,16 @@
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'; // Your Flask backend
 
-// Auth headers using userId as token
+// Auth headers using JWT (issued at login/register)
 const getAuthHeaders = () => {
-  const token = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
   return {
     "Content-Type": "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
   };
 };
 
-// ✅ Fetch chat sessions by user ID (sidebar list)
+// ✅ Fetch chat sessions for the authenticated user (userId from JWT on server)
 export async function fetchChatSessions(userId) {
   const res = await fetch(`${BASE_URL}/chats/${userId}`, {
     headers: getAuthHeaders(),
@@ -41,13 +41,12 @@ export async function getChatHistory(chatId) {
   return messages;
 }
 
-// ✅ Send a chat request to backend, receive answer + chat ID
+// ✅ Send a chat request to backend (user from JWT); receive answer + chat ID
 export async function getChatResponse(messages, chatId) {
-  const token = localStorage.getItem("userId");
   const res = await fetch(`${BASE_URL}/chat-response`, {
     method: "POST",
     headers: getAuthHeaders(),
-    body: JSON.stringify({ messages, userId: token, chatId }),
+    body: JSON.stringify({ messages, chatId }),
   });
   if (!res.ok) {
     const errorText = await res.text();

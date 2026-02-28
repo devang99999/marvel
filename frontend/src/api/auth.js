@@ -9,29 +9,21 @@ export async function login(email, password) {
 
     if (!res.ok) throw new Error('Login failed');
 
-    const data = await res.json(); // use .json instead of .text + JSON.parse
-    console.log('Parsed data:', data);
-
-    if (!data.user || !data.user.id) {
-      throw new Error('User ID missing in response');
+    const data = await res.json();
+    if (!data.user || !data.user.id || !data.token) {
+      throw new Error('User ID or token missing in response');
     }
 
-    // Try explicitly logging before storing
-    console.log('Saving userId to localStorage:', data.user.id);
+    localStorage.setItem('token', data.token);
     localStorage.setItem('userId', data.user.id);
     localStorage.setItem('email', data.user.email);
-
-    // Confirm storage
-    console.log('Stored userId:', localStorage.getItem('userId'));
 
     return data;
 
   } catch (err) {
-    console.error('Login error:', err);
     alert(err.message);
   }
 }
-
 
 export async function register(email, password) {
   const res = await fetch(`${BASE_URL}/register`, {
@@ -41,13 +33,11 @@ export async function register(email, password) {
   });
   if (!res.ok) throw new Error('Register failed');
   const data = await res.json();
+  if (!data.user || !data.user.id || !data.token) throw new Error('Invalid register response');
 
-  // Same assumption as login
-  if (!data.user || !data.user.id) throw new Error('Invalid register response');
-
+  localStorage.setItem('token', data.token);
   localStorage.setItem('userId', data.user.id);
   localStorage.setItem('email', data.user.email);
 
-  console.log('User ID:', data.user.id);
   return data;
 }

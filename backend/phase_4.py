@@ -1,6 +1,7 @@
 import os
 import time
 import uuid
+import json
 import requests
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
@@ -686,11 +687,14 @@ Format them as a JSON list of strings.
         res.raise_for_status()
         raw_text = res.json()["choices"][0]["message"]["content"]
 
-        # Try to parse valid JSON list
+        # Parse as JSON list only (no eval — safe from RCE)
         suggestions = []
+        raw = raw_text.strip()
         try:
-            suggestions = eval(raw_text.strip())
-        except:
+            parsed = json.loads(raw)
+            if isinstance(parsed, list):
+                suggestions = [str(x).strip() for x in parsed if x][:10]
+        except (json.JSONDecodeError, TypeError):
             suggestions = [line.strip("-• ").strip() for line in raw_text.split("\n") if line.strip()]
 
         return jsonify({"recommendations": suggestions[:3]})
